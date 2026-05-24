@@ -9,6 +9,7 @@ const state = {
   moves: [],
   captures: { B: 0, W: 0 },
   mode: "game",
+  drawRemoveCandidate: null,
   activeTab: "ascii"
 };
 
@@ -195,17 +196,26 @@ function playMove(color, point) {
 
 function editPoint(point) {
   const currentValue = state.board[point.y][point.x];
+  const pointKey = `${point.x},${point.y}`;
 
   if (state.mode === "draw") {
     if (currentValue === EMPTY) {
       const color = els.nextColor.value;
       state.board[point.y][point.x] = color;
       state.captures = { B: 0, W: 0 };
+      state.drawRemoveCandidate = null;
       setStatus(`Pintada ${color} ${pointName(point.x, point.y)}.`);
-    } else {
+    } else if (state.drawRemoveCandidate === pointKey) {
       state.board[point.y][point.x] = EMPTY;
       state.captures = { B: 0, W: 0 };
+      state.drawRemoveCandidate = null;
       setStatus(`Retirada ${currentValue} ${pointName(point.x, point.y)}.`);
+    } else {
+      const nextValue = otherColor(currentValue);
+      state.board[point.y][point.x] = nextValue;
+      state.captures = { B: 0, W: 0 };
+      state.drawRemoveCandidate = pointKey;
+      setStatus(`Cambiada a ${nextValue} ${pointName(point.x, point.y)}.`);
     }
     render();
     return;
@@ -253,6 +263,7 @@ function resetBoard(size = state.size) {
   state.board = makeBoard(size);
   state.moves = [];
   state.captures = { B: 0, W: 0 };
+  state.drawRemoveCandidate = null;
   els.nextColor.value = BLACK;
   setStatus("");
   render();
@@ -476,6 +487,7 @@ function importMoves() {
 
   state.size = parsed.size;
   state.mode = "game";
+  state.drawRemoveCandidate = null;
   els.boardSize.value = String(parsed.size);
   const result = rebuildFromMoves(parsed.moves);
 
@@ -514,6 +526,7 @@ function setMode(mode) {
     state.moves = [];
     state.captures = { B: 0, W: 0 };
   }
+  state.drawRemoveCandidate = null;
   setStatus(mode === "draw" ? "Modo dibujar tablero." : "Modo partida.");
   render();
 }
