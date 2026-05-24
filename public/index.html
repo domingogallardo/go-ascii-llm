@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Go ASCII LLM</title>
+    <script>
+      if (window.location.pathname.endsWith("/go")) {
+        window.location.replace(`${window.location.pathname}/${window.location.search}${window.location.hash}`);
+      }
+    </script>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <h1>Go ASCII LLM</h1>
+          <p>Tablero, jugadas y exportacion limpia para copiar a un modelo.</p>
+        </div>
+        <div class="topbar-actions" aria-label="Acciones principales">
+          <button id="copyAscii" type="button">Copiar ASCII</button>
+          <button id="copyMoves" type="button">Copiar jugadas</button>
+        </div>
+      </header>
+
+      <section class="workspace">
+        <aside class="panel controls" aria-label="Controles">
+          <div class="field-row">
+            <label for="boardSize">Tamano</label>
+            <select id="boardSize">
+              <option value="19" selected>19x19</option>
+              <option value="13">13x13</option>
+              <option value="9">9x9</option>
+            </select>
+          </div>
+
+          <div class="field-row">
+            <label for="nextColor">Turno</label>
+            <select id="nextColor">
+              <option value="B">Negras</option>
+              <option value="W">Blancas</option>
+            </select>
+          </div>
+
+          <label class="check-row">
+            <input id="autoAlternate" type="checkbox" checked>
+            Alternar despues de jugar
+          </label>
+
+          <div class="button-grid">
+            <button id="passMove" type="button">Pasar</button>
+            <button id="undoMove" type="button">Deshacer</button>
+            <button id="clearBoard" type="button">Limpiar</button>
+            <button id="sampleGame" type="button">Ejemplo</button>
+          </div>
+
+          <div class="import-block">
+            <label for="importText">Importar SGF o jugadas</label>
+            <textarea id="importText" spellcheck="false" placeholder="(;SZ[19];B[pd];W[dp])
+1. B Q16
+2. W D4"></textarea>
+            <button id="importMoves" type="button">Importar</button>
+            <p id="statusLine" class="status-line" role="status"></p>
+          </div>
+        </aside>
+
+        <section class="board-wrap" aria-label="Tablero de Go">
+          <div id="board" class="board" role="grid" aria-label="Tablero interactivo"></div>
+        </section>
+
+        <section class="panel output-panel" aria-label="Salida">
+          <div class="tabs" role="tablist" aria-label="Salidas">
+            <button class="tab is-active" type="button" data-tab="ascii">ASCII</button>
+            <button class="tab" type="button" data-tab="moves">Jugadas</button>
+            <button class="tab" type="button" data-tab="prompt">Prompt</button>
+          </div>
+          <textarea id="outputText" class="output-text" readonly spellcheck="false"></textarea>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

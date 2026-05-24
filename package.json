@@ -1,0 +1,18 @@
+{
+  "name": "go-ascii-llm",
+  "version": "1.0.0",
+  "description": "Aplicacion web sencilla para convertir posiciones de Go en ASCII para LLMs.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "check": "node --check server.js && node --check public/app.js"
+  },
+  "keywords": [
+    "go",
+    "baduk",
+    "ascii",
+    "llm"
+  ],
+  "author": "Domingo Gallardo",
+  "license": "MIT"
+}
