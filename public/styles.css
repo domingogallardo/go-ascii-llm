@@ -197,30 +197,47 @@ textarea {
 }
 
 .board {
-  display: grid;
   width: min(100%, 76vh);
   max-width: 860px;
   aspect-ratio: 1;
   border: 2px solid #4b3820;
   background-color: #e4b65b;
-  background-image:
-    linear-gradient(to right, rgba(66, 45, 18, 0.58) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(66, 45, 18, 0.58) 1px, transparent 1px);
-  background-size: calc(100% / var(--grid-lines)) calc(100% / var(--grid-lines));
-  background-position: calc(50% / var(--grid-lines)) calc(50% / var(--grid-lines));
-  padding: calc(100% / var(--board-size) / 2);
   position: relative;
+  overflow: hidden;
+}
+
+.board::before {
+  content: "";
+  position: absolute;
+  inset: var(--board-edge);
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      rgba(66, 45, 18, 0.68) 0 1px,
+      transparent 1px calc(100% / var(--grid-lines))
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(66, 45, 18, 0.68) 0 1px,
+      transparent 1px calc(100% / var(--grid-lines))
+    );
+  background-position: 0 0;
+  border-right: 1px solid rgba(66, 45, 18, 0.58);
+  border-bottom: 1px solid rgba(66, 45, 18, 0.58);
+  pointer-events: none;
 }
 
 .point {
-  width: 100%;
-  aspect-ratio: 1;
+  width: var(--stone-size);
+  height: var(--stone-size);
   border: 0;
   border-radius: 50%;
   background: transparent;
   min-height: 0;
   padding: 0;
-  position: relative;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  z-index: 1;
 }
 
 .point:hover {
@@ -230,7 +247,7 @@ textarea {
 .point::after {
   content: "";
   position: absolute;
-  inset: 12%;
+  inset: 7%;
   border-radius: 50%;
 }
 

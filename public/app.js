@@ -238,9 +238,14 @@ function starPoints(size) {
 
 function renderBoard() {
   const stars = new Set(starPoints(state.size));
+  const boardEdge = 6;
+  const boardSpan = 100 - (boardEdge * 2);
+  const pointStep = boardSpan / (state.size - 1);
+
   els.board.style.setProperty("--board-size", state.size);
   els.board.style.setProperty("--grid-lines", state.size - 1);
-  els.board.style.gridTemplateColumns = `repeat(${state.size}, minmax(0, 1fr))`;
+  els.board.style.setProperty("--board-edge", `${boardEdge}%`);
+  els.board.style.setProperty("--stone-size", `${pointStep * 0.88}%`);
   els.board.replaceChildren();
 
   for (let y = 0; y < state.size; y += 1) {
@@ -251,6 +256,8 @@ function renderBoard() {
       button.className = "point";
       button.dataset.x = String(x);
       button.dataset.y = String(y);
+      button.style.left = `${boardEdge + (x * pointStep)}%`;
+      button.style.top = `${boardEdge + (y * pointStep)}%`;
       button.setAttribute("role", "gridcell");
       button.setAttribute("aria-label", `${pointName(x, y)} ${value || "vacio"}`);
 
