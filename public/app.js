@@ -265,7 +265,15 @@ function renderBoard() {
       if (value === WHITE) button.classList.add("white");
       if (stars.has(`${x},${y}`)) button.classList.add("star");
 
-      button.addEventListener("click", () => playMove(els.nextColor.value, { x, y }));
+      button.addEventListener("pointerdown", (event) => {
+        event.preventDefault();
+        playMove(els.nextColor.value, { x, y });
+      });
+      button.addEventListener("click", (event) => {
+        if (event.detail === 0) {
+          playMove(els.nextColor.value, { x, y });
+        }
+      });
       els.board.append(button);
     }
   }

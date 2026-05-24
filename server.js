@@ -15,7 +15,10 @@ const MIME_TYPES = {
 };
 
 function sendText(res, status, body, contentType = "text/plain; charset=utf-8") {
-  res.writeHead(status, { "content-type": contentType });
+  res.writeHead(status, {
+    "content-type": contentType,
+    "cache-control": "no-store"
+  });
   res.end(body);
 }
 
@@ -34,7 +37,10 @@ async function serveStatic(req, res, pathname) {
     const extension = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[extension] || "application/octet-stream";
 
-    res.writeHead(200, { "content-type": contentType });
+    res.writeHead(200, {
+      "content-type": contentType,
+      "cache-control": "no-store"
+    });
     if (req.method === "HEAD") {
       res.end();
       return;
