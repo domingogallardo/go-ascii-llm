@@ -8,12 +8,14 @@ const state = {
   board: [],
   moves: [],
   captures: { B: 0, W: 0 },
+  mode: "game",
   activeTab: "ascii"
 };
 
 const els = {
   board: document.querySelector("#board"),
   boardSize: document.querySelector("#boardSize"),
+  colorLabel: document.querySelector("#colorLabel"),
   nextColor: document.querySelector("#nextColor"),
   autoAlternate: document.querySelector("#autoAlternate"),
   passMove: document.querySelector("#passMove"),
@@ -26,6 +28,7 @@ const els = {
   outputText: document.querySelector("#outputText"),
   copyAscii: document.querySelector("#copyAscii"),
   copyMoves: document.querySelector("#copyMoves"),
+  modeButtons: Array.from(document.querySelectorAll(".mode-button")),
   tabs: Array.from(document.querySelectorAll(".tab"))
 };
 
@@ -190,6 +193,32 @@ function playMove(color, point) {
   render();
 }
 
+function editPoint(point) {
+  const currentValue = state.board[point.y][point.x];
+
+  if (state.mode === "draw") {
+    if (currentValue === EMPTY) {
+      const color = els.nextColor.value;
+      state.board[point.y][point.x] = color;
+      state.captures = { B: 0, W: 0 };
+      setStatus(`Pintada ${color} ${pointName(point.x, point.y)}.`);
+    } else {
+      state.board[point.y][point.x] = EMPTY;
+      state.captures = { B: 0, W: 0 };
+      setStatus(`Retirada ${currentValue} ${pointName(point.x, point.y)}.`);
+    }
+    render();
+    return;
+  }
+
+  if (currentValue !== EMPTY) {
+    setStatus("Ese punto ya esta ocupado.");
+    return;
+  }
+
+  playMove(els.nextColor.value, point);
+}
+
 function passMove() {
   const color = els.nextColor.value;
   const candidateMoves = state.moves.map(({ color: moveColor, point, pass }) => ({
@@ -267,11 +296,11 @@ function renderBoard() {
 
       button.addEventListener("pointerdown", (event) => {
         event.preventDefault();
-        playMove(els.nextColor.value, { x, y });
+        editPoint({ x, y });
       });
       button.addEventListener("click", (event) => {
         if (event.detail === 0) {
-          playMove(els.nextColor.value, { x, y });
+          editPoint({ x, y });
         }
       });
       els.board.append(button);
@@ -290,9 +319,14 @@ function asciiBoard() {
   const rows = [];
 
   rows.push(`Size: ${state.size}x${state.size}`);
+  rows.push(`Mode: ${state.mode === "draw" ? "Board drawing" : "Game"}`);
   rows.push("Legend: X=Black, O=White, .=Empty");
-  rows.push(`Captures by Black: ${state.captures.B}; Captures by White: ${state.captures.W}`);
-  rows.push(`Next to play: ${els.nextColor.value === BLACK ? "Black" : "White"}`);
+  if (state.mode === "game") {
+    rows.push(`Captures by Black: ${state.captures.B}; Captures by White: ${state.captures.W}`);
+    rows.push(`Next to play: ${els.nextColor.value === BLACK ? "Black" : "White"}`);
+  } else {
+    rows.push(`Selected stone: ${els.nextColor.value === BLACK ? "Black" : "White"}`);
+  }
   rows.push("");
   rows.push(`    ${labels}`);
 
@@ -311,11 +345,28 @@ function asciiBoard() {
 }
 
 function movesList() {
+  if (state.mode === "draw") return "Modo dibujar tablero: sin lista de jugadas.";
   if (!state.moves.length) return "Sin jugadas registradas.";
   return state.moves.map(moveText).join("\n");
 }
 
+function setupSgfText() {
+  const black = [];
+  const white = [];
+
+  for (let y = 0; y < state.size; y += 1) {
+    for (let x = 0; x < state.size; x += 1) {
+      const value = state.board[y][x];
+      if (value === BLACK) black.push(`[${pointToSgfCoord({ x, y })}]`);
+      if (value === WHITE) white.push(`[${pointToSgfCoord({ x, y })}]`);
+    }
+  }
+
+  return `(;GM[1]FF[4]SZ[${state.size}]${black.length ? `AB${black.join("")}` : ""}${white.length ? `AW${white.join("")}` : ""})`;
+}
+
 function sgfText() {
+  if (state.mode === "draw") return setupSgfText();
   const body = state.moves.map((move) => `;${move.color}[${pointToSgfCoord(move.point)}]`).join("");
   return `(;GM[1]FF[4]SZ[${state.size}]${body})`;
 }
@@ -347,7 +398,21 @@ function renderOutput() {
   });
 }
 
+function renderControls() {
+  const isDrawMode = state.mode === "draw";
+
+  els.colorLabel.textContent = isDrawMode ? "Piedra" : "Turno";
+  els.autoAlternate.disabled = isDrawMode;
+  els.passMove.disabled = isDrawMode;
+  els.undoMove.disabled = isDrawMode;
+  els.copyMoves.textContent = isDrawMode ? "Copiar SGF" : "Copiar jugadas";
+  els.modeButtons.forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.mode === state.mode);
+  });
+}
+
 function render() {
+  renderControls();
   renderBoard();
   renderOutput();
 }
@@ -410,6 +475,7 @@ function importMoves() {
   }
 
   state.size = parsed.size;
+  state.mode = "game";
   els.boardSize.value = String(parsed.size);
   const result = rebuildFromMoves(parsed.moves);
 
@@ -441,6 +507,17 @@ function loadSample() {
   importMoves();
 }
 
+function setMode(mode) {
+  if (state.mode === mode) return;
+  state.mode = mode;
+  if (mode === "draw") {
+    state.moves = [];
+    state.captures = { B: 0, W: 0 };
+  }
+  setStatus(mode === "draw" ? "Modo dibujar tablero." : "Modo partida.");
+  render();
+}
+
 els.boardSize.addEventListener("change", () => resetBoard(Number(els.boardSize.value)));
 els.passMove.addEventListener("click", passMove);
 els.undoMove.addEventListener("click", undoMove);
@@ -448,7 +525,16 @@ els.clearBoard.addEventListener("click", () => resetBoard(state.size));
 els.sampleGame.addEventListener("click", loadSample);
 els.importMoves.addEventListener("click", importMoves);
 els.copyAscii.addEventListener("click", () => copyText(asciiBoard(), "ASCII"));
-els.copyMoves.addEventListener("click", () => copyText(movesList(), "Lista de jugadas"));
+els.copyMoves.addEventListener("click", () => {
+  if (state.mode === "draw") {
+    copyText(sgfText(), "SGF");
+    return;
+  }
+  copyText(movesList(), "Lista de jugadas");
+});
+els.modeButtons.forEach((button) => {
+  button.addEventListener("click", () => setMode(button.dataset.mode));
+});
 els.tabs.forEach((tab) => {
   tab.addEventListener("click", () => {
     state.activeTab = tab.dataset.tab;

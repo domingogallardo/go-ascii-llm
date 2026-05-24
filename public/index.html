@@ -9,8 +9,8 @@
         window.location.replace(`${window.location.pathname}/${window.location.search}${window.location.hash}`);
       }
     </script>
-    <link rel="icon" href="favicon.svg?v=20260524-2" type="image/svg+xml">
-    <link rel="stylesheet" href="styles.css?v=20260524-2">
+    <link rel="icon" href="favicon.svg?v=20260524-4" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css?v=20260524-4">
   </head>
   <body>
     <main class="app-shell">
@@ -27,6 +27,11 @@
 
       <section class="workspace">
         <aside class="panel controls" aria-label="Controles">
+          <div class="mode-toggle" aria-label="Modo de edicion">
+            <button class="mode-button is-active" type="button" data-mode="game">Partida</button>
+            <button class="mode-button" type="button" data-mode="draw">Dibujar</button>
+          </div>
+
           <div class="field-row">
             <label for="boardSize">Tamano</label>
             <select id="boardSize">
@@ -37,7 +42,7 @@
           </div>
 
           <div class="field-row">
-            <label for="nextColor">Turno</label>
+            <label id="colorLabel" for="nextColor">Turno</label>
             <select id="nextColor">
               <option value="B">Negras</option>
               <option value="W">Blancas</option>
@@ -81,6 +86,6 @@
       </section>
     </main>
 
-    <script src="app.js?v=20260524-2"></script>
+    <script src="app.js?v=20260524-4"></script>
   </body>
 </html>

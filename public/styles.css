@@ -141,6 +141,19 @@ textarea {
   margin-bottom: 12px;
 }
 
+.mode-toggle {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.mode-button.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
 .field-row label,
 .import-block label {
   color: var(--muted);
@@ -302,6 +315,13 @@ textarea {
 .tab.is-active {
   background: var(--accent);
   color: white;
+}
+
+button:disabled,
+select:disabled,
+input:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .output-text {

@@ -13,8 +13,10 @@ Abre `http://127.0.0.1:3091`.
 ## Funciones
 
 - Tableros de 9x9, 13x13 y 19x19.
-- Tablero clicable con alternancia de turno.
+- Modo partida con tablero clicable, alternancia de turno y lista de jugadas.
+- Modo dibujar tablero para crear posiciones libremente sin lista de jugadas.
 - Capturas basicas al reproducir jugadas.
+- Retirada de piedras pulsando sobre una interseccion ocupada.
 - Importacion desde SGF sencillo o lista de jugadas tipo `1. B Q16`.
 - Exportacion de tablero ASCII, lista de jugadas, SGF y prompt completo.
 
