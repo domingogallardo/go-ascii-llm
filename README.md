@@ -48,3 +48,7 @@ Si Tailscale cambia de host, revisa el resultado con:
 ```bash
 tailscale serve status
 ```
+
+## Gestión central del servicio (29/10/2026)
+
+La configuración canónica y la operación están en `computer-ops/ops/launchagents/` y `computer-ops/ops/bin/local_service.py`. El instalador local delega allí; una configuración coincidente no reinicia el servicio. Código y datos permanecen en este proyecto. Puertos, intérprete y URL se conservan. Para cambios de configuración, revisar y detener únicamente este servicio antes de instalar.
